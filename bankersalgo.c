@@ -186,26 +186,44 @@ int safetyAlgorithm(int safeSequence[P])
     for (int h = 0; h < R; h++)
         work[h] = available[h];
     
-    for (int z =0; z < P; z++)
+    for (int z = 0; z < P; z++)
         finish[z] = false;
     
     while (count < P)
-        {
+    {
             bool found = false;
             for (int z = 0, z < P; z++)
-                {
+            {
                 if (finish[z])
                     continue;
 
                 bool canRun = true;
                 for (int h = 0; h < R; h++)
-                    work[h] += allocation[z][h];
+                {
+                    if (need[z][h] > work[h])
+                    {
+                        canRun = false;
+                        break;
+                    }
+                }
+if (canRun)
+{
+for (int h = 0; h < R; h++)
+    work[h] += allocation[z][h];
 
-                finish
+            finish[z] = true;
+                safeSequence[count++] = z;
+                found = true;
+}
+    }
+    if (!found)
+        return 0;
+ }
+    for (int z = 0; z < P; z++)
+            if (!finish[z])
+                return 0;
     
-        
-
-    return 0;
+    return 1;
 }
 
 /* =================================================
