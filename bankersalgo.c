@@ -179,6 +179,31 @@ int validateState(void)
 int safetyAlgorithm(int safeSequence[P])
 {
     /* TODO 3: Write your code here */
+    int work[R];
+    bool finish[P];
+    int count = 0;
+
+    for (int h = 0; h < R; h++)
+        work[h] = available[h];
+    
+    for (int z =0; z < P; z++)
+        finish[z] = false;
+    
+    while (count < P)
+        {
+            bool found = false;
+            for (int z = 0, z < P; z++)
+                {
+                if (finish[z])
+                    continue;
+
+                bool canRun = true;
+                for (int h = 0; h < R; h++)
+                    work[h] += allocation[z][h];
+
+                finish
+    
+        
 
     return 0;
 }
