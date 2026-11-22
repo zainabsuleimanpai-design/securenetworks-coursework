@@ -118,6 +118,10 @@ int need[P][R];
 void calculateNeed(void)
 {
     /* TODO 1: Write your code here */
+
+    for (int z =0; z <P; z++)
+        for (int h  = 0; h<R; h++)
+            need[z][h] = maximum[z][h] - allocation[z][h];
 }
 
 /* =================================================
@@ -135,8 +139,24 @@ void calculateNeed(void)
 int validateState(void)
 {
     /* TODO 2: Write your code here */
+    for (int h = 0; h < R; h++)
+        {
+            if (available [h] < 0)
+                return 0;
+            
+            int allocated = 0;
+            for (int z = 0; z < P; z++)
+                allocated += allocated[z][h];
+            
+            if (available[h] + allocated != total[h])
+                return 0;
+            
+            for (int z = 0; z < P; z++)
+                for (int h = 0; h < R; h++)
+                    if (allocation[z][h] < 0 || allocation[z][h] > maximum[z][h])
+                        return 0;
 
-    return 0;
+    return 1;
 }
 
 /* =================================================
