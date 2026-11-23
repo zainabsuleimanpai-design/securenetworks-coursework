@@ -78,13 +78,13 @@ def receive(sock):
 # =============================================================================
 def make_ticket(ticket_id, name, key=SIGNING_KEY):
     """TODO 1.1  Create a signed ticket: base64(details) + "." + base64(signature)."""
-    details = ...                       # TODO 1.1: a dict with "id", "name" and "event" (EVENT)
+    details = {"id": ticket_id, "name": name, "event": EVENT}       # TODO 1.1: a dict with "id", "name" and "event" (EVENT)
     # Step 1: turn the details into bytes
-    data = ...                          # TODO 1.1: use the helper to_bytes()
+    data = to_bytes(details)                # TODO 1.1: use the helper to_bytes()
     # Step 2: sign the bytes with the private key
-    signature = ...                     # TODO 1.1: an Ed25519 key has a .sign(bytes) method
+    signature = key.sign(data)         # TODO 1.1: an Ed25519 key has a .sign(bytes) method
     # Step 3: join both parts into one line of text
-    ticket = ...                        # TODO 1.1: b64() of each part, with "." between them
+    ticket = b64(data) + "." + b64(signature)                     # TODO 1.1: b64() of each part, with "." between them
     print(f"   [BOX OFFICE] details   : {data.decode()}")
     print(f"   [BOX OFFICE] signature : {signature.hex()[:32]}...  ({len(signature)} bytes)")
     return ticket
@@ -95,18 +95,19 @@ def check_ticket(ticket):
     Only the public key is used, so verification works offline."""
     try:
         # Step 1: split the ticket at "." and turn both parts back into bytes
-        data_text, signature_text = ...     # TODO 1.2: split the text at "."
-        data, signature = ...               # TODO 1.2: unb64() of each part
+        data_text, signature_text = ticket.split(".")     # TODO 1.2: split the text at "."
+        data, signature = unb64(data_text), unb64(signature_text)             # TODO 1.2: unb64() of each part
         # Step 2: check the signature with the public key (raises InvalidSignature if invalid)
-        ...                                 # TODO 1.2: PUBLIC_KEY has a .verify(signature, data) method
+        PUBLIC_KEY.verify(signature, data)        # TODO 1.2: PUBLIC_KEY has a .verify(signature, data) method
     except (ValueError, InvalidSignature):
         print("   [SCANNER]    signature verification failed - ticket rejected")
         return None
     # Step 3: the signature is valid, so the details can be trusted
-    details = ...                       # TODO 1.2: json.loads() turns the bytes back into a dict
+    details = json.loads(data)                       # TODO 1.2: json.loads() turns the bytes back into a dict
     # Step 4: reject a valid ticket issued for a different event
-    ...                                 # TODO 1.2: if details["event"] is not EVENT:
-                                        #           print a message and return None
+    if details["event"] != EVENT:    # TODO 1.2: if details["event"] is not EVENT:
+        print("   [SCANNER]    ticket is for a different event - ticket rejected")
+        return None    #           print a message and return None
     print(f"   [SCANNER]    signature verified: {details}")
     return details
 
@@ -114,12 +115,12 @@ def check_ticket(ticket):
 def edit_name(ticket, new_name):
     """TODO 1.3  Simulate tampering: change the holder name in a valid ticket, keeping its original signature."""
     # Step 1: split the ticket and decode the details into a dict
-    data_text, signature_text = ...     # TODO 1.3: split at "." (like in check_ticket)
-    details = ...                       # TODO 1.3: json.loads() of unb64(data_text)
+    data_text, signature_text = ticket.split(".")     # TODO 1.3: split at "." (like in check_ticket)
+    details = json.loads(unb64(data_text))     # TODO 1.3: json.loads() of unb64(data_text)
     # Step 2: change the holder name
-    ...                                 # TODO 1.3: put new_name in the details
+    details["name"] = new_name     # TODO 1.3: put new_name in the details
     # Step 3: combine the modified details with the original signature
-    edited = ...                        # TODO 1.3: details encoded as in make_ticket, then "." and signature_text
+    edited = b64(to_bytes(details)) + "." + signature_text   # TODO 1.3: details encoded as in make_ticket, then "." and signature_text
     print(f"   [TAMPER]     holder name changed to {new_name}; original signature kept")
     return edited
 
