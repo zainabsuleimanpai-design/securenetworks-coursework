@@ -315,8 +315,23 @@ int requestResources(int pid, int request[R])
 int releaseResources(int pid, int release[R])
 {
     /* TODO 5: Write your code here */
+    /* validate process ID */
+    if (pid < 0 || pid >= P)
+        return 0;
+    for (int h = 0; h < R; h++)
+        if (release[h] < 0 || release[h] > allocation[pid][h])
+            return 0;
 
-    return 0;
+    /* giving the resources back */
+    for  (int h = 0); h < R; h++)
+    {
+        allocation[pid][h] -= release[h];
+        available[h] += release[h];
+    }
+    calculateNeed();
+    
+
+    return 1;
 }
 
 /* =================================================
