@@ -146,10 +146,11 @@ int validateState(void)
             
             int allocated = 0;
             for (int z = 0; z < P; z++)
-                allocated += allocated[z][h];
+                allocated += allocation[z][h];
             
             if (available[h] + allocated != total[h])
                 return 0;
+        }
             
             for (int z = 0; z < P; z++)
                 for (int h = 0; h < R; h++)
@@ -246,7 +247,7 @@ int requestResources(int pid, int request[R])
     /* TODO 4: Write your code here */
     int sequence[P];
 
-    calculatedNeed();
+    calculateNeed();
 
     if (pid < 0 || pid >= P)
     {
@@ -254,12 +255,16 @@ int requestResources(int pid, int request[R])
         return 0;
     }
 
+for (int h = 0; h < R; h++)
+{
+        
     if (request[h] < 0)
     {
         printf("\nRequest values cannot be negative\n");
+        return 0;
     }
 
-    if (request[h] > need[pid][h])
+    if (request[h] > available[h])
     {
         printf("\nResources not available - process must wait\n");
         reurn 0;
@@ -275,13 +280,13 @@ int requestResources(int pid, int request[R])
     }
 
     /* running the saftey alogrithm on the new state*/
-    if (safteyAlogrithm(sequence))
+    if (safetyAlogrithm(sequence))
     {
         /* safe: keep the allocation*/
         printf("\nSystem remains SAFE\n");
         printf("Safe Sequence: ");
         for (int z = 0; z < P; z++)
-            printf("P%d", sequence[z]);
+            printf("P%d ", sequence[z]);
         printf("\n\n");
         return 1;
     }
@@ -323,7 +328,7 @@ int releaseResources(int pid, int release[R])
             return 0;
 
     /* giving the resources back */
-    for  (int h = 0); h < R; h++)
+    for  (int h = 0; h < R; h++)
     {
         allocation[pid][h] -= release[h];
         available[h] += release[h];
@@ -353,7 +358,7 @@ void displayState(void)
     /* TODO 6: Write your code here */
     calculateNeed();
 
-    printf("n%-9s%-14%-14s%s\n", "Process", "Allocation", "Maximum", "Need");
+    printf("\n%-9s%-14s%-14s%s\n", "Process", "Allocation", "Maximum", "Need");
     for (int z = 0; z < P; z++)
     {
         printf("P%-8d", z);
@@ -374,7 +379,7 @@ void displayState(void)
     for (int h = 0; h < R; h++)
         printf("%d ", available[h]);
 
-    printf("\nAvailable Resources: "); 
+    printf("Total Resources: "); 
     for (int h = 0; h < R; h++)
         printf("%d ", total[h]);
 
