@@ -193,7 +193,7 @@ int safetyAlgorithm(int safeSequence[P])
     while (count < P)
     {
             bool found = false;
-            for (int z = 0, z < P; z++)
+            for (int z = 0; z < P; z++)
             {
                 if (finish[z])
                     continue;
@@ -263,11 +263,16 @@ for (int h = 0; h < R; h++)
         printf("\nRequest values cannot be negative\n");
         return 0;
     }
+    if (request[h] > need[pid][h])
+    {
+        printf("\nError: request exceeds the declared maximum need\n");
+        return 0;
+    }
 
     if (request[h] > available[h])
     {
         printf("\nResources not available - process must wait\n");
-        reurn 0;
+        return 0;
     }
 }
 
@@ -280,7 +285,7 @@ for (int h = 0; h < R; h++)
     }
 
     /* running the saftey alogrithm on the new state*/
-    if (safetyAlogrithm(sequence))
+    if (safetyAlgorithm(sequence))
     {
         /* safe: keep the allocation*/
         printf("\nSystem remains SAFE\n");
@@ -379,7 +384,7 @@ void displayState(void)
     for (int h = 0; h < R; h++)
         printf("%d ", available[h]);
 
-    printf("Total Resources: "); 
+    printf("\nTotal Resources: "); 
     for (int h = 0; h < R; h++)
         printf("%d ", total[h]);
 
