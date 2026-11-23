@@ -140,23 +140,23 @@ int validateState(void)
 {
     /* TODO 2: Write your code here */
     for (int h = 0; h < R; h++)
-        {
-            if (available [h] < 0)
+    {
+        if (available [h] < 0)
+            return 0;
+        
+        int allocated = 0;
+        for (int z = 0; z < P; z++)
+            allocated += allocation[z][h];
+        
+        if (available[h] + allocated != total[h])
+            return 0;
+    }
+    
+    
+    for (int z = 0; z < P; z++)
+        for (int h = 0; h < R; h++)
+            if (allocation[z][h] < 0 || allocation[z][h] > maximum[z][h])
                 return 0;
-            
-            int allocated = 0;
-            for (int z = 0; z < P; z++)
-                allocated += allocation[z][h];
-            
-            if (available[h] + allocated != total[h])
-                return 0;
-        }
-            
-            for (int z = 0; z < P; z++)
-                for (int h = 0; h < R; h++)
-                    if (allocation[z][h] < 0 || allocation[z][h] > maximum[z][h])
-                        return 0;
-
     return 1;
 }
 
@@ -255,28 +255,29 @@ int requestResources(int pid, int request[R])
         printf("\nInvalid process ID\n");
         return 0;
     }
-
-for (int h = 0; h < R; h++)
-{
+    
+    for (int h = 0; h < R; h++)
+    {
         
-    if (request[h] < 0)
-    {
-        printf("\nRequest values cannot be negative\n");
-        return 0;
+        if (request[h] < 0)
+        {
+            printf("\nRequest values cannot be negative\n");
+            return 0;
+        }
+        
+        if (request[h] > need[pid][h])
+        {
+            printf("\nError: request exceeds the declared maximum need\n");
+            return 0;
+        }
+        
+        if (request[h] > available[h])
+        {
+            printf("\nResources not available - process must wait\n");
+            return 0;
+        }
     }
-    if (request[h] > need[pid][h])
-    {
-        printf("\nError: request exceeds the declared maximum need\n");
-        return 0;
-    }
-
-    if (request[h] > available[h])
-    {
-        printf("\nResources not available - process must wait\n");
-        return 0;
-    }
-}
-
+    
     /* pretend to allocate*/
     for (int h = 0; h< R; h++)
     {
@@ -284,7 +285,7 @@ for (int h = 0; h < R; h++)
         allocation[pid][h] += request[h];
         need[pid][h] -= request[h];
     }
-
+    
     /* running the saftey alogrithm on the new state*/
     if (safetyAlgorithm(sequence))
     {
@@ -296,8 +297,9 @@ for (int h = 0; h < R; h++)
         printf("\n\n");
         return 1;
     }
-
-    /* undo step 4 */
+    
+    
+     /* undo step 4 */
     for (int h = 0; h < R; h++)
     {
         available[h] += request[h];
@@ -307,7 +309,6 @@ for (int h = 0; h < R; h++)
     printf("\nUnsafe state detected\n");
     printf("Allocation rolled back\n");
     
-
     return 0;
 }
 
