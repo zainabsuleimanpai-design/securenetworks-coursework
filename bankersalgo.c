@@ -351,7 +351,39 @@ int releaseResources(int pid, int release[R])
 void displayState(void)
 {
     /* TODO 6: Write your code here */
+    calculateNeed();
+
+    printf("n%-9s%-14%-14s%s\n", "Process", "Allocation", "Maximum", "Need");
+    for (int z = 0; z < P; z++)
+    {
+        printf("P%-8d", z);
+        
+        for (int h = 0; h < R; h++)
+            printf("%d ", allocation[z][h]);
+        printf("%8s", "");
+
+        for (int h = 0; h < R; h++)
+            printf("%d ", maximum[z][h]);
+        printf("%8s", "");
+
+        for (int h = 0; h < R; h++)
+            printf("%d ", need[z][h]);
+        printf("\n"); 
+    }
+    printf("\nAvailable Resources: "); 
+    for (int h = 0; h < R; h++)
+        printf("%d ", available[h]);
+
+    printf("\nAvailable Resources: "); 
+    for (int h = 0; h < R; h++)
+        printf("%d ", total[h]);
+
+    printf("\n==========\n");
+    
 }
+
+            
+
 
 /* =================================================
    SUPPLIED OPERATING SYSTEM MENU
