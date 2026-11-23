@@ -244,6 +244,58 @@ for (int h = 0; h < R; h++)
 int requestResources(int pid, int request[R])
 {
     /* TODO 4: Write your code here */
+    int sequence[P];
+
+    calculatedNeed();
+
+    if (pid < 0 || pid >= P)
+    {
+        printf("\nInvalid process ID\n");
+        return 0;
+    }
+
+    if (request[h] < 0)
+    {
+        printf("\nRequest values cannot be negative\n");
+    }
+
+    if (request[h] > need[pid][h])
+    {
+        printf("\nResources not available - process must wait\n");
+        reurn 0;
+    }
+}
+
+    /* pretend to allocate*/
+    for (int h = 0; h< R; h++)
+    {
+        available[h] -= request[h];
+        allocation[pid][h] += request[h];
+        need[pid][h] -= request[h];
+    }
+
+    /* running the saftey alogrithm on the new state*/
+    if (safteyAlogrithm(sequence))
+    {
+        /* safe: keep the allocation*/
+        printf("\nSystem remains SAFE\n");
+        printf("Safe Sequence: ");
+        for (int z = 0; z < P; z++)
+            printf("P%d", sequence[z]);
+        printf("\n\n");
+        return 1;
+    }
+
+    /* undo step 4 */
+    for (int h = 0; h < R; h++)
+    {
+        available[h] += request[h];
+        allocation[pid][h] -= request[h];
+        need[pid][h] += request[h];
+    }
+    printf("\nUnsafe state detected\n");
+    printf("Allocation rolled back\n");
+    
 
     return 0;
 }
